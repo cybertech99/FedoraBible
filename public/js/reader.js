@@ -91,7 +91,16 @@ const Reader = (() => {
   const MIN_COLUMN_WIDTH = 280;
   function syncColumnLayout(tab) {
     const inner = tab.paneEl.querySelector('.verses-inner');
-    if (!inner || tab.column_mode !== 'dual') return;
+    if (!inner) return;
+    if (tab.column_mode !== 'dual') {
+      // Clear any column-count/column-width this set earlier — leaving them
+      // in place is exactly the bug: they're inline styles, so they keep
+      // overriding the CSS (which stops applying once the `dual` class is
+      // removed from `.verses`) even after switching back to single-column.
+      inner.style.columnCount = '';
+      inner.style.columnWidth = '';
+      return;
+    }
     const available = inner.clientWidth;
     const colWidth = Math.floor((available - COLUMN_GAP) / 2);
     if (colWidth < MIN_COLUMN_WIDTH) {
