@@ -87,6 +87,30 @@ const Notes = (() => {
     setTimeout(() => document.addEventListener('mousedown', onOutsideClick, true), 0);
   }
 
+  // The quick-highlight alternative to openForVerse — no popover, just a
+  // toggle: click an unhighlighted verse to highlight it yellow, click an
+  // already-highlighted one (any color) to remove it. Used instead of
+  // openForVerse when App.isVersePopupEnabled() is off (see reader.js).
+  async function toggleQuickHighlight(tab, verseEl) {
+    const verse = Number(verseEl.dataset.verse);
+    const verseData = tab.chapterData.verses.find((v) => v.verse === verse);
+    const hadHighlight = !!verseData.highlight_color;
+    try {
+      if (hadHighlight) {
+        await Api.removeHighlight(tab.book_id, tab.chapter, verse);
+        verseEl.classList.remove('hl-yellow', 'hl-green', 'hl-blue', 'hl-pink', 'hl-orange');
+        verseData.highlight_color = null;
+      } else {
+        await Api.setHighlight(tab.book_id, tab.chapter, verse, 'yellow');
+        verseEl.classList.add('hl-yellow');
+        verseData.highlight_color = 'yellow';
+      }
+      Drawer.invalidate();
+    } catch {
+      toast('Could not update highlight');
+    }
+  }
+
   popover.querySelectorAll('.swatch').forEach((btn) => {
     btn.addEventListener('click', async () => {
       if (!current) return;
@@ -177,5 +201,5 @@ const Notes = (() => {
     close();
   });
 
-  return { openForVerse, close, isOpen };
+  return { openForVerse, close, isOpen, toggleQuickHighlight };
 })();
