@@ -1,0 +1,36 @@
+{
+  "name": "fedora-bible",
+  "version": "1.0.0",
+  "description": "A full-featured local Bible reader with multi-translation support, full-text search, multi-tab reading, highlights, and notes.",
+  "private": true,
+  "type": "commonjs",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "db:init": "node scripts/init-db.js",
+    "import:kjv": "node scripts/import-translation.js --code KJV --name \"King James Version\" --dir data/sources/kjv --year 1769 --publicDomain true",
+    "import:tr": "node scripts/import-midvash.js --code TR --name \"Textus Receptus (Stephanus 1550/Scrivener 1894)\" --dir data/sources/tr --language grc --year 1894 --publicDomain true --sourceNote \"Greek New Testament, public domain\"",
+    "import:wlc": "node scripts/import-midvash.js --code WLC --name \"Westminster Leningrad Codex\" --dir data/sources/wlc --language hbo --year 2008 --publicDomain true --sourceNote \"Hebrew Old Testament (Masoretic Text), free-distribution license via tanach.us\"",
+    "import:lxxe": "node scripts/import-usfm.js --code LXXE --name \"Septuagint, Brenton English translation (1851)\" --dir data/sources/lxx-en --language en --year 1851 --publicDomain true --sourceNote \"English translation of the Greek Septuagint by Sir Lancelot C. L. Brenton; 39 protocanonical OT books\"",
+    "import:lxxg": "node scripts/import-swete.js --code LXXG --name \"Septuagint (Swete edition, Greek)\" --dir data/sources/lxx-gr --language grc --year 1930 --publicDomain true --sourceNote \"Old Testament in Greek according to the Septuagint, ed. H.B. Swete; word-level data via Open Greek and Latin Project (CC BY-SA 4.0); 36 of 39 protocanonical books\"",
+    "import:pesh": "node scripts/import-translation.js --code PESH --name \"Peshitta (Syriac New Testament)\" --dir data/sources/peshitta --language syr --year 1905 --publicDomain true --sourceNote \"British and Foreign Bible Society Syriac NT critical edition (1905/1920), public domain; text via scrollmapper/bible_databases\"",
+    "import:cops": "node scripts/import-translation.js --code COPS --name \"Coptic New Testament (Sahidic)\" --dir data/sources/coptic-sahidic --language cop --publicDomain true --sourceNote \"Sahidic Coptic New Testament (3rd-4th c. translation); digital transcription via scrollmapper/bible_databases, CC BY-SA (attribution + share-alike)\"",
+    "import:peshot": "node scripts/import-translation.js --code PESHOT --name \"Peshitta Old Testament\" --dir data/sources/peshitta-ot --language syr --publicDomain false --sourceNote \"Vetus Testamentum Syriace critical edition (Peshitta Institute Amsterdam/Brill) where published, Codex Ambrosianus otherwise; text via ETCBC/peshitta. CC BY-NC -- noncommercial use only; commercial use requires permission from the Peshitta Institute/Brill.\"",
+    "import:avd": "node scripts/import-pipedelim.js --code AVD --name \"Van Dyck (Arabic)\" --file data/sources/vandyck-ar/vandyck.txt --language ar --year 1865 --publicDomain true --sourceNote \"Smith & Van Dyck Arabic translation, completed 1865, public domain; text via github.com/EtkAppsAdmin/Bibles-1\"",
+    "setup": "npm run db:init && npm run import:kjv && npm run import:tr && npm run import:wlc && npm run import:lxxe && npm run import:lxxg && npm run import:pesh && npm run import:cops && npm run import:peshot && npm run import:avd && npm run pwa:seed",
+    "pwa:seed": "node scripts/copy-db-for-pwa.js",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build:exe": "node scripts/build-exe.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@sqlite.org/sqlite-wasm": "^3.53.0-build1",
+    "esbuild": "^0.28.2",
+    "postject": "^1.0.0-alpha.6"
+  }
+}

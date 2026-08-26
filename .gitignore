@@ -1,0 +1,11 @@
+node_modules/
+data/bible.db
+data/bible.db-*
+public/data/bible.db-*
+*.log
+dist/
+release/
+.browser-profile/
+.claude/
+.tmp-*
+.*.png

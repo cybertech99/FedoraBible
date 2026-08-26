@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FedoraBible</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="theme-color" content="#2b2320" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FedoraBible" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="topbar">
+      <div id="brand" title="FedoraBible">&#10022;<span>FedoraBible</span></div>
+      <div id="tab-bar"></div>
+      <button id="new-tab-btn" class="icon-btn" title="New tab (n)">
+        <svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <div class="spacer"></div>
+      <button id="palette-btn" title="Go to reference (Ctrl+K)">
+        <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+        <span>Go to&hellip;</span><kbd>Ctrl K</kbd>
+      </button>
+      <button id="theme-btn" class="icon-btn" title="Theme (d)">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3.4" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 1.2v1.8M8 13v1.8M1.2 8H3M13 8h1.8M3.2 3.2l1.3 1.3M11.5 11.5l1.3 1.3M12.8 3.2l-1.3 1.3M4.5 11.5l-1.3 1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button id="drawer-btn" class="icon-btn" title="Study drawer (b)">
+        <svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M10 2.5v11" stroke="currentColor" stroke-width="1.4"/></svg>
+      </button>
+      <button id="help-btn" class="icon-btn" title="Keyboard shortcuts (?)">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M6.2 6.2a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.7-.8 1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="8" cy="11.4" r="0.8" fill="currentColor"/></svg>
+      </button>
+    </header>
+
+    <div id="main">
+      <main id="panes"></main>
+
+      <aside id="drawer" class="hidden">
+        <nav id="drawer-tabs">
+          <button data-mode="search" class="active">Search</button>
+          <button data-mode="highlights">Marks</button>
+          <button data-mode="notes">Notes</button>
+          <button data-mode="bookmarks">Saved</button>
+          <button data-mode="progress">Journey</button>
+        </nav>
+        <div id="drawer-body">
+          <section id="drawer-search" class="drawer-section">
+            <div class="search-controls">
+              <input id="search-input" type="text" placeholder="Search, or try love* &hellip;" autocomplete="off" spellcheck="false" />
+              <select id="search-translation"></select>
+              <select id="search-testament">
+                <option value="">All</option>
+                <option value="OT">OT</option>
+                <option value="NT">NT</option>
+              </select>
+            </div>
+            <div id="search-goto" class="hidden"></div>
+            <div id="search-results"></div>
+          </section>
+          <section id="drawer-highlights" class="drawer-section hidden"></section>
+          <section id="drawer-notes" class="drawer-section hidden"></section>
+          <section id="drawer-bookmarks" class="drawer-section hidden"></section>
+          <section id="drawer-progress" class="drawer-section hidden"></section>
+        </div>
+        <footer id="drawer-footer">
+          <button id="export-btn" title="Export highlights, notes & bookmarks as Markdown">
+            <svg viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            Export study notes
+          </button>
+        </footer>
+      </aside>
+    </div>
+  </div>
+
+  <template id="tpl-tab">
+    <div class="tab">
+      <span class="tab-label"></span>
+      <span class="tab-trans"></span>
+      <button class="tab-close" title="Close tab">
+        <svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </template>
+
+  <template id="tpl-pane">
+    <section class="pane">
+      <div class="pane-resizer"></div>
+      <div class="pane-nav">
+        <button class="pane-prev icon-btn" title="Previous chapter (&larr;)">
+          <svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </button>
+        <select class="pane-book"></select>
+        <select class="pane-chapter"></select>
+        <select class="pane-translation"></select>
+        <button class="pane-about icon-btn" title="About this translation">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M8 7.2v4M8 5.1v.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="pane-next icon-btn" title="Next chapter (&rarr;)">
+          <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </button>
+        <span class="pane-nav-gap"></span>
+        <button class="pane-bookmark icon-btn" title="Bookmark this chapter">
+          <svg viewBox="0 0 16 16"><path d="M4 2.5h8V14l-4-2.8L4 14V2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="none"/></svg>
+        </button>
+        <button class="pane-link icon-btn" title="Link tab &mdash; linked tabs turn pages and scroll together">
+          <svg viewBox="0 0 16 16"><path d="M6.5 9.5l3-3M5.5 7L4 8.5a2.5 2.5 0 0 0 3.5 3.5L9 10.5M10.5 9L12 7.5A2.5 2.5 0 0 0 8.5 4L7 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+        </button>
+        <button class="pane-font-btn icon-btn" title="Type &amp; layout">Aa</button>
+        <div class="font-menu hidden">
+          <label>Typeface <select class="font-family-select"></select></label>
+          <label>Size <select class="font-size-select"></select></label>
+          <label>Layout
+            <div class="seg">
+              <button class="seg-verses">Verses</button>
+              <button class="seg-flow">Flow</button>
+            </div>
+          </label>
+          <label>Columns
+            <div class="seg">
+              <button class="seg-col-single">1</button>
+              <button class="seg-col-dual">2</button>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="chapter-note"></div>
+      <div class="verses"></div>
+    </section>
+  </template>
+
+  <template id="tpl-verse">
+    <div class="verse">
+      <sup class="verse-num"></sup>
+      <span class="verse-text"></span>
+      <span class="verse-badges"></span>
+    </div>
+  </template>
+
+  <div id="popover" class="hidden">
+    <div class="popover-ref"></div>
+    <div class="popover-colors">
+      <button data-color="yellow" class="swatch yellow" title="Yellow"></button>
+      <button data-color="green" class="swatch green" title="Green"></button>
+      <button data-color="blue" class="swatch blue" title="Blue"></button>
+      <button data-color="pink" class="swatch pink" title="Pink"></button>
+      <button data-color="orange" class="swatch orange" title="Orange"></button>
+      <button data-color="" class="swatch none" title="Remove highlight">
+        <svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="popover-quick">
+      <button id="popover-copy">
+        <svg viewBox="0 0 16 16"><rect x="5" y="5" width="8" height="8" rx="1.2" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M3 10.5V3.8C3 3.4 3.4 3 3.8 3h6.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
+        Copy
+      </button>
+      <button id="popover-bookmark">
+        <svg viewBox="0 0 16 16"><path d="M4 2.5h8V14l-4-2.8L4 14V2.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/></svg>
+        Save
+      </button>
+    </div>
+    <textarea id="popover-note" placeholder="Write a note&hellip;" rows="3"></textarea>
+    <div class="popover-actions">
+      <button id="popover-delete-note" class="danger hidden">Delete note</button>
+      <span class="spacer"></span>
+      <button id="popover-save-note" class="primary">Save note</button>
+    </div>
+  </div>
+
+  <div id="palette" class="overlay hidden">
+    <div id="palette-box">
+      <input id="palette-input" placeholder="Jump to John 3:16, ps 23 &mdash; or type to search&hellip;" autocomplete="off" spellcheck="false" />
+      <div id="palette-results"></div>
+      <div id="palette-hint"><kbd>&uarr;&darr;</kbd> navigate <kbd>Enter</kbd> open <kbd>Ctrl Enter</kbd> new tab <kbd>Esc</kbd> close</div>
+    </div>
+  </div>
+
+  <div id="help" class="overlay hidden">
+    <div id="help-box">
+      <h2>Keyboard shortcuts</h2>
+      <div id="help-grid"></div>
+      <p class="help-tip">Tip: click any verse for highlights, notes, copy &amp; save.</p>
+    </div>
+  </div>
+
+  <div id="translation-info" class="overlay hidden">
+    <div id="ti-box">
+      <button id="ti-close" class="icon-btn" title="Close">
+        <svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div id="ti-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+
+  <script src="js/localDb.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/refparse.js"></script>
+  <script src="js/reader.js"></script>
+  <script src="js/tabs.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/drawer.js"></script>
+  <script src="js/palette.js"></script>
+  <script src="js/translationInfo.js"></script>
+  <script src="js/shortcuts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
