@@ -206,11 +206,7 @@ const Reader = (() => {
         // Don't hijack a text-selection drag as a popover click.
         if (window.getSelection().toString()) return;
         e.stopPropagation();
-        if (App.isVersePopupEnabled()) {
-          Notes.openForVerse(tab, verseEl);
-        } else {
-          Notes.toggleQuickHighlight(tab, verseEl);
-        }
+        Notes.openForVerse(tab, verseEl);
       });
     });
 

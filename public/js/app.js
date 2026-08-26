@@ -15,25 +15,6 @@ const App = (() => {
     toast(THEME_NAMES[next]);
   }
 
-  // Whether clicking a verse opens the full notes/highlight popover (the
-  // long-standing default) or just quick-toggles a yellow highlight with no
-  // popup — a global app preference (localStorage), not per-tab, since
-  // having it vary pane-to-pane would make clicking unpredictable. Missing
-  // from storage means "on", so existing users see no behavior change.
-  let versePopupEnabled = true;
-  function isVersePopupEnabled() {
-    return versePopupEnabled;
-  }
-  function applyVersePopupSetting(enabled) {
-    versePopupEnabled = enabled;
-    localStorage.setItem('fb-verse-popup', enabled ? '1' : '0');
-    document.getElementById('verse-popup-btn').classList.toggle('on', enabled);
-  }
-  function toggleVersePopup() {
-    applyVersePopupSetting(!versePopupEnabled);
-    toast(versePopupEnabled ? 'Verse click: notes & highlight popup' : 'Verse click: quick highlight');
-  }
-
   // Tiny toast utility, used app-wide.
   let toastTimer = null;
   window.toast = function toast(msg) {
@@ -74,8 +55,6 @@ const App = (() => {
   async function boot() {
     applyTheme(localStorage.getItem('fb-theme') || 'light');
     document.getElementById('theme-btn').addEventListener('click', cycleTheme);
-    applyVersePopupSetting(localStorage.getItem('fb-verse-popup') !== '0');
-    document.getElementById('verse-popup-btn').addEventListener('click', toggleVersePopup);
     startLifecycleSignals();
     registerServiceWorker();
 
@@ -94,5 +73,5 @@ const App = (() => {
 
   boot();
 
-  return { cycleTheme, isVersePopupEnabled, toggleVersePopup };
+  return { cycleTheme };
 })();

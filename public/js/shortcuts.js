@@ -13,7 +13,6 @@ const Shortcuts = (() => {
     ['d', 'Cycle theme'],
     ['p', 'Verses / flow layout'],
     ['c', 'Single / dual column'],
-    ['h', 'Verse click: popup / quick highlight'],
     ['?', 'This help'],
     ['Esc', 'Close / stop'],
   ];
@@ -88,9 +87,6 @@ const Shortcuts = (() => {
         break;
       case 'd':
         App.cycleTheme();
-        break;
-      case 'h':
-        App.toggleVersePopup();
         break;
       case 'p':
         if (tab) {
