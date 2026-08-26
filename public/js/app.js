@@ -15,6 +15,27 @@ const App = (() => {
     toast(THEME_NAMES[next]);
   }
 
+  // Whether clicking a verse opens the notes/highlight popover (the
+  // long-standing default) or does nothing at all — a global app preference
+  // (localStorage), not per-tab, since having it vary pane-to-pane would
+  // make clicking unpredictable. Off is meant for mobile: an accidental tap
+  // while scrolling/reading shouldn't pop anything up. The plain :hover glow
+  // on a verse (see app.css) is unrelated to this and always stays on —
+  // this only governs the click action.
+  let versePopupEnabled = true;
+  function isVersePopupEnabled() {
+    return versePopupEnabled;
+  }
+  function applyVersePopupSetting(enabled) {
+    versePopupEnabled = enabled;
+    localStorage.setItem('fb-verse-popup', enabled ? '1' : '0');
+    document.getElementById('verse-popup-btn').classList.toggle('on', enabled);
+  }
+  function toggleVersePopup() {
+    applyVersePopupSetting(!versePopupEnabled);
+    toast(versePopupEnabled ? 'Verse click: notes & highlight popup' : 'Verse click: disabled');
+  }
+
   // Tiny toast utility, used app-wide.
   let toastTimer = null;
   window.toast = function toast(msg) {
@@ -55,6 +76,8 @@ const App = (() => {
   async function boot() {
     applyTheme(localStorage.getItem('fb-theme') || 'light');
     document.getElementById('theme-btn').addEventListener('click', cycleTheme);
+    applyVersePopupSetting(localStorage.getItem('fb-verse-popup') !== '0');
+    document.getElementById('verse-popup-btn').addEventListener('click', toggleVersePopup);
     startLifecycleSignals();
     registerServiceWorker();
 
@@ -73,5 +96,5 @@ const App = (() => {
 
   boot();
 
-  return { cycleTheme };
+  return { cycleTheme, isVersePopupEnabled, toggleVersePopup };
 })();

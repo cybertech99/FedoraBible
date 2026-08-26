@@ -206,6 +206,7 @@ const Reader = (() => {
         // Don't hijack a text-selection drag as a popover click.
         if (window.getSelection().toString()) return;
         e.stopPropagation();
+        if (!App.isVersePopupEnabled()) return;
         Notes.openForVerse(tab, verseEl);
       });
     });

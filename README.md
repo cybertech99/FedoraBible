@@ -29,7 +29,8 @@ npm start         # http://localhost:3000
 - **Highlights, notes & bookmarks** — click any verse: five highlight colors, a note,
   copy-with-reference, and save (bookmark). Chapters can be bookmarked from the toolbar
   and annotated with chapter-level notes. All keyed by reference, independent of
-  translation.
+  translation. The verse-popup toolbar toggle (`h`) can turn this off — clicks do
+  nothing instead — so an accidental tap on a phone doesn't pop anything up.
 - **Study drawer** (`b`) — Search / Marks / Notes / Saved / Journey panels; every entry
   jumps to its passage. **Export study notes** writes everything to Markdown.
 - **Journey** — reading progress tracked automatically per chapter, with whole-Bible,
