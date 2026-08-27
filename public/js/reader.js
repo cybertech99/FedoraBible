@@ -110,6 +110,23 @@ const Reader = (() => {
       inner.style.columnCount = '2';
       inner.style.columnWidth = colWidth + 'px';
     }
+
+    // Resizing (the drag handle, a window resize, a tablet rotation, the
+    // drawer opening) changes the page width — but the current scrollLeft
+    // was computed against the *old* width, so past page 1 it's now some
+    // fraction of a page off. Left alone, that shows a torn mix of two
+    // pages (a sliver of one page's trailing column alongside the next
+    // page's leading one) and an off-center divider — not a fresh
+    // misalignment, just last page's position interpreted against a page
+    // width that no longer applies. Re-snap it to the nearest boundary
+    // under the new width; instant, since this fires on every frame of an
+    // active drag and an animated jump each time would be distracting.
+    const versesEl = tab.paneEl.querySelector('.verses');
+    const pageWidth = versesEl.clientWidth;
+    if (pageWidth > 0) {
+      const target = Math.round(versesEl.scrollLeft / pageWidth) * pageWidth;
+      if (target !== versesEl.scrollLeft) versesEl.scrollTo({ left: target, behavior: 'instant' });
+    }
   }
 
   // Page-turn for dual-column mode: one "page" is exactly one .verses-wide
